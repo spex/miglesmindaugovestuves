@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Miglės ir Mindaugo vestuvės</title>
+	<link href="https://fonts.googleapis.com/css?family=Sansita
+|Bad+Script|Italianno|Pinyon+Script" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+  </head>
+  <body>
+  
+	  <div id="main-container">
+		  <form id="form-container" method="post" target="invite_create.php">
+			  <h1>Sveiki!</h1>
+			  <p>Maloniai kviečiame jus sudalyvauti mūsų vestvių šventėje!</p>
+			  <p>Šventės Data:<br> 2017m. Rugpjūčio 26d. </p>
+			  <label for="name"> 
+				Jūsų vardas ir pavardė:
+				<div class="form-input"><input type="text" name="name" id="name"/></div>
+			  </label>
+			  <label>Ar galėsite dalyvauti?</label>
+			  <div class="radio-container">
+				  <label class="inline forRadio" for="willAttendYes"> 
+					 <input type="radio" name="willAttend" id="willAttendYes" value="Yes">
+					 <span>Taip</span>
+				  </label>
+				  <label class="inline forRadio balanceRight" for="willAttendNo"> 
+					 <input type="radio" name="willAttend" id="willAttendNo" value="No">
+					 <span>Ne</span>
+				  </label>
+			  </div>
+			  <div id="optionalInfo" class="invisible">
+				  <label for="vegetarian">
+					  <input type="checkbox" name="vegetarian" id="vegetarian" value="Yes">
+					  <span>Vegetariškas maistas?</span>
+				  </label>
+				  <label for="withSo">
+					  <input type="checkbox" name="withSo" id="withSo" value="Yes">
+					  <span>Būsite su antra puse?</span>
+				  </label>
+				  <label for="soName" class="conditional invisible" data-conditional="withSo">
+					  Antros pusės vardas:
+					  <div class="form-input"><input type="text" name="soName" id="soName"/></div>
+				  </label>
+				  <label for="vegetarianSo" class="conditional invisible" data-conditional="withSo">
+					  <input type="checkbox" name="vegetarianSo" id="vegetarianSo" value="Yes">
+					  <span>Vegetariškas maistas antrai pusei?</span>
+				  </label>
+				  <label for="comments">
+					  Klausimai ir pasiūlymai:
+					  <div class="form-input">
+						  <textarea name="comments" id="comments" class="autoexpand" rows="4"></textarea>
+					  </div>
+				  </label>
+			  </div>
+			  <hr/>
+			  <button id="#submit">Patvirtinti</button>
+			  <div id="err-container">
+			  </div>
+		  </form>
+		  <div id="thank-you" class="invisible">
+		  <h1> Ačiū už jūsų atsakymą!</h1>
+		  </div>
+		  <div id="totoro">
+			<img src="totoro.png" alt="Happy Totoro!">
+		  </div>
+		  <div id="dustBuuny">
+			<img src="dustBunny.png" alt="Dust Bunny, waving goodbye">
+		  </div>
+	  </div>
+  
+	<script
+	  src="https://code.jquery.com/jquery-3.1.1.min.js"
+	  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+	  crossorigin="anonymous">
+	</script>
+	<script type="text/javascript">
+			if(!console){
+				console = {log: function() {}};
+			}
+			$(autorun);
+		   
+		   
+			function autorun()
+			{
+				var willAttendRadios = $("[name='willAttend']");
+				var form = $("#form-container");
+				willAttendRadios.each(function(i, radio) {
+					$(radio).change(onWillAttendClick);
+				});
+
+				form.submit(submitForm);
+				hookConditionals();
+			}
+			
+		   function hookConditionals(){
+		   	 $('.conditional').each(function(i, e) {
+		   	 	var el = $(e);
+		   	 	var dependsOn = $(('#' + el.data('conditional')));
+				 console.log(dependsOn);
+				dependsOn.on('change', function(){
+					if(dependsOn.is(':checked')){
+						el.slideDown();
+					} else {
+						el.slideUp();
+
+					}
+				})
+			 })
+		   }
+
+			function onWillAttendClick(e) {
+				var totoro = $("#totoro");
+				var dustBunny = $("#dustBuuny");
+				var optionalinfo = $("#optionalInfo");
+
+				switch(e.target.value){
+					case "Yes":
+						totoro.addClass("active");
+						dustBunny.removeClass("active");
+						optionalinfo.slideDown();
+					break;
+					case "No":
+						totoro.removeClass("active");
+						dustBunny.addClass("active");
+						optionalinfo.slideUp();
+					break;
+				} 
+			}
+
+			function submitForm (e) {
+				e.preventDefault();
+				var form = $("#form-container");
+				
+				$.post("invite_create.php", 
+					getFormObj("form-container"),
+					onFormSuccess
+				)
+				
+			   return false;
+			}
+		   
+		   
+		   
+			function onFormSuccess(r){
+				var result = JSON.parse(r);
+				console.log(result);
+				if(result.success){
+					$("#thank-you").removeClass("invisible");
+					$("#form-container").addClass("invisible");
+				} else {
+					$("#err-container").html("Prašome užpildyti visus laukus!");
+				}
+				
+			}
+			
+			function getFormObj(formId) {
+				var formObj = {};
+				var inputs = $('#'+formId).serializeArray();
+				$.each(inputs, function (i, input) {
+					formObj[input.name] = input.value;
+				});
+				return formObj;
+			}
+
+	</script>
+  </body>
+</html>

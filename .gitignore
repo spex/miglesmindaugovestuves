@@ -1,0 +1,17 @@
+node_modules
+_svg-sprite-map.scss
+/.idea/
+.tmp/
+.build/
+.reports/
+/.vagrant/
+/build/
+/coverage/
+/dist/
+/npm-debug.log
+/out/
+/src/assets/styles/*.map
+/uploads/
+/*.sublime-project
+/*.sublime-workspace
+/logs/
